@@ -39,6 +39,8 @@ function mapRecipe(r = {}) {
     category: r.category || "",
     restrictions: Array.isArray(r.restrictions)
       ? r.restrictions.map((x) => String(x || "").toLowerCase())
+      : typeof r.restrictions === "string"
+      ? r.restrictions.split(",").map((x) => x.trim().toLowerCase()).filter(Boolean)
       : [],
     ingredients: Array.isArray(r.ingredients) ? r.ingredients : [],
     instructions: Array.isArray(r.instructions) ? r.instructions : [],
