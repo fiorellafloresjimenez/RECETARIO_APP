@@ -98,19 +98,6 @@ export default function Home() {
     await loadFavs();
   };
 
-  const renderHeader = () => (
-    <View style={styles.headerContainer}>
-      <Text style={styles.appTitle}>Super Recetario</Text>
-      <SearchBar
-        value={query}
-        onChange={setQuery}
-        onSubmit={setQuery}
-        placeholder="Buscar recetas..."
-      />
-      <Filters value={filters} onChange={setFilters} />
-    </View>
-  );
-
   const renderEmpty = () => (
     <View style={styles.center}>
       <Text style={styles.emptyText}>
@@ -133,7 +120,18 @@ export default function Home() {
             isFav={favIds.includes(String(item.id))}
           />
         )}
-        ListHeaderComponent={renderHeader}
+        ListHeaderComponent={
+          <View style={styles.headerContainer}>
+            <Text style={styles.appTitle}>Super Recetario</Text>
+            <SearchBar
+              value={query}
+              onChange={setQuery}
+              onSubmit={setQuery}
+              placeholder="Buscar recetas..."
+            />
+            <Filters value={filters} onChange={setFilters} />
+          </View>
+        }
         ListEmptyComponent={renderEmpty}
         contentContainerStyle={styles.listContent}
       />
