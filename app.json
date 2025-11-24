@@ -7,7 +7,6 @@
     "orientation": "portrait",
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
-
     "splash": {
       "image": "./assets/splash-screen.png",
       "resizeMode": "contain",
@@ -26,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/web-favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6e61167d-373c-4f77-9dc2-d191682e798c"
+      }
+    },
+    "owner": "alejandroadriel"
   }
 }
