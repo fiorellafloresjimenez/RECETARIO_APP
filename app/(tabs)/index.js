@@ -5,9 +5,8 @@ import { Stack } from "expo-router";
 import SearchBar from "../../src/components/SearchBar";
 import Filters from "../../src/components/Filters";
 import RecipeCard from "../../src/components/RecipeCard";
-import { getRecipes } from "../../src/services/api";
+import { getRecipes, getUserFavorites } from "../../src/services/api";
 import { AuthContext } from "../../src/store/authContext";
-import { toggleFav, getFavIds } from "../../src/store/FavsStore";
 import { COLORS, SIZES } from "../../src/constants/theme";
 
 export default function Home() {
@@ -15,14 +14,14 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState({});
   const [loading, setLoading] = useState(true);
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [favIds, setFavIds] = useState([]);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
       try {
-        const data = await getRecipes();
+        const data = await getRecipes(token);
         setRecipes(Array.isArray(data) ? data : []);
       } catch (e) {
         console.error("Error cargando recetas:", e);
@@ -30,19 +29,26 @@ export default function Home() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [token]);
+
+  const loadFavs = async () => {
+    if (user && token) {
+      try {
+        const favs = await getUserFavorites(user.id, token);
+        // getUserFavorites returns array of recipe objects
+        const ids = favs.map(r => String(r.id));
+        setFavIds(ids);
+      } catch (e) {
+        console.error("Error loading favs:", e);
+      }
+    } else {
+      setFavIds([]);
+    }
+  };
 
   useEffect(() => {
-    async function loadFavs() {
-      if (user) {
-        const ids = await getFavIds(user.id);
-        setFavIds(ids);
-      } else {
-        setFavIds([]);
-      }
-    }
     loadFavs();
-  }, [user]);
+  }, [user, token]);
 
   const filtered = useMemo(() => {
     let list = recipes;
@@ -87,10 +93,9 @@ export default function Home() {
     return list;
   }, [recipes, query, filters]);
 
-  const handleFav = async (receta) => {
-    if (!user) return; 
-    const { ids } = await toggleFav(user.id, receta);
-    setFavIds(ids);
+  const handleFavUpdate = async () => {
+    // Called when a favorite is toggled in RecipeCard
+    await loadFavs();
   };
 
   const renderHeader = () => (
@@ -124,7 +129,7 @@ export default function Home() {
         renderItem={({ item }) => (
           <RecipeCard
             receta={item}
-            onFav={() => handleFav(item)}
+            onFav={handleFavUpdate}
             isFav={favIds.includes(String(item.id))}
           />
         )}

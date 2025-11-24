@@ -12,12 +12,13 @@ import { loginUser, registerUser } from "../services/api";
 export const AuthContext = createContext({});
 
 const STORAGE_KEY = "recetario_session_v1";
+const BASE_URL = process.env.EXPO_PUBLIC_API_BASE || "https://recetario-app-backend.onrender.com";
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Carga inicial desde SecureStore
+  // Carga inicial desde SecureStore y validación
   useEffect(() => {
     async function loadInitialSession() {
       try {
@@ -25,7 +26,23 @@ export function AuthProvider({ children }) {
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && typeof parsed === "object" && parsed.user && parsed.token) {
-            setSession(parsed);
+            // Validar token
+            try {
+              const res = await fetch(`${BASE_URL}/api/validate`, {
+                headers: { Authorization: `Bearer ${parsed.token}` },
+              });
+              if (res.ok) {
+                setSession(parsed);
+              } else {
+                await SecureStore.deleteItemAsync(STORAGE_KEY);
+              }
+            } catch (e) {
+              // Si falla la validación (ej. red), mantenemos la sesión pero podríamos marcarla como "offline" o similar.
+              // Por simplicidad, si falla la red, asumimos válido por ahora o podríamos invalidar.
+              // Aquí optamos por mantener si es error de red, pero si el server responde 401, el res.ok será false.
+              console.warn("Validation failed or network error", e);
+              setSession(parsed); 
+            }
           }
         }
       } catch (e) {

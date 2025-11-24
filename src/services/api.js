@@ -1,4 +1,6 @@
-const BASE_URL = process.env.REACT_APP_API_BASE || "https://recetario-app-backend.onrender.com";
+const BASE_URL =
+  process.env.EXPO_PUBLIC_API_BASE ||
+  "https://recetario-app-backend.onrender.com";
 
 async function http(path, { method = "GET", headers, body } = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -45,26 +47,36 @@ function mapRecipe(r = {}) {
 
 const mapList = (arr) => (Array.isArray(arr) ? arr.map(mapRecipe) : []);
 
-
-export async function getRecipes() {
-  const data = await http("/api/recipes");
+// === Recetas ===
+export async function getRecipes(token) {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const data = await http("/api/recipes", { headers });
   return mapList(data);
 }
 
-export async function getRecipeById(id) {
-  const data = await http(`/api/recipes/${id}`);
+export async function getRecipeById(id, token) {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const data = await http(`/api/recipes/${id}`, { headers });
   return mapRecipe(data);
 }
 
 export async function createRecipe(payload, token) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  const data = await http(`/api/recipes`, { method: "POST", body: payload, headers });
+  const data = await http(`/api/recipes`, {
+    method: "POST",
+    body: payload,
+    headers,
+  });
   return mapRecipe(data);
 }
 
 export async function updateRecipe(id, payload, token) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  const data = await http(`/api/recipes/${id}`, { method: "PUT", body: payload, headers });
+  const data = await http(`/api/recipes/${id}`, {
+    method: "PUT",
+    body: payload,
+    headers,
+  });
   return mapRecipe(data);
 }
 
@@ -73,7 +85,7 @@ export async function deleteRecipe(id, token) {
   return await http(`/api/recipes/${id}`, { method: "DELETE", headers });
 }
 
-
+// === Autenticación ===
 export async function loginUser({ email, password }) {
   return await http("/api/auth/login", {
     method: "POST",
@@ -81,7 +93,13 @@ export async function loginUser({ email, password }) {
   });
 }
 
-export async function registerUser({ email, password, username, birthday, gender }) {
+export async function registerUser({
+  email,
+  password,
+  username,
+  birthday,
+  gender,
+}) {
   const body = {
     email,
     password,
@@ -89,48 +107,47 @@ export async function registerUser({ email, password, username, birthday, gender
     birthday: birthday || null,
     gender: gender || null,
   };
-  return await http("/api/auth/register", {
-    method: "POST",
-    body,
-  });
+  return await http("/api/auth/register", { method: "POST", body });
 }
 
+// === Favoritos ===
+export async function getUserFavorites(userId, token) {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const favoritesData = await http(`/api/auth/favorites/${userId}`, {
+    headers,
+  });
 
-export async function getUserFavorites(userId) {
-
-  const favoritesData = await http(`/api/auth/favorites/${userId}`);
-  
   if (Array.isArray(favoritesData)) {
-    const promises = favoritesData.map(item => getRecipeById(item.recipe_id));
-    
+    const promises = favoritesData.map((item) =>
+      getRecipeById(item.recipe_id, token)
+    );
     const recipes = await Promise.all(promises);
-    
-    return recipes.filter(r => r && r.id);
+    return recipes.filter((r) => r && r.id);
   }
-  
   return [];
 }
 
-export async function addFavorite(userId, recipeId) {
+export async function addFavorite(userId, recipeId, token) {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   return await http(`/api/auth/favorites/${userId}`, {
-    method: "PUT", 
+    method: "PUT",
     body: { recipeId },
+    headers,
   });
 }
 
-export async function removeFavorite(userId, recipeId) {
+export async function removeFavorite(userId, recipeId, token) {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   return await http(`/api/auth/favorites/${userId}`, {
     method: "DELETE",
     body: { recipeId },
+    headers,
   });
 }
 
 // === Comentarios ===
-
 export async function getComments(recipeId) {
-  return http(`/api/comments/${recipeId}`, {
-    method: "GET",
-  });
+  return http(`/api/comments/${recipeId}`, { method: "GET" });
 }
 
 export async function addComment(recipeId, { content, userId }) {
