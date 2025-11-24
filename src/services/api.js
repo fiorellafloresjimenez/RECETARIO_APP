@@ -113,14 +113,10 @@ export async function registerUser({
 // === Favoritos ===
 export async function getUserFavorites(userId, token) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  const favoritesData = await http(`/api/auth/favorites/${userId}`, {
-    headers,
-  });
+  const favoritesData = await http(`/api/favorites/${userId}`, { headers });
 
   if (Array.isArray(favoritesData)) {
-    const promises = favoritesData.map((item) =>
-      getRecipeById(item.recipe_id, token)
-    );
+    const promises = favoritesData.map((item) => getRecipeById(item.recipe_id, token));
     const recipes = await Promise.all(promises);
     return recipes.filter((r) => r && r.id);
   }
@@ -129,27 +125,18 @@ export async function getUserFavorites(userId, token) {
 
 export async function addFavorite(userId, recipeId, token) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  return await http(`/api/auth/favorites/${userId}`, {
-    method: "PUT",
-    body: { recipeId },
-    headers,
-  });
+  return await http(`/api/favorites/${userId}`, { method: "PUT", body: { recipeId }, headers });
 }
 
 export async function removeFavorite(userId, recipeId, token) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  return await http(`/api/auth/favorites/${userId}`, {
-    method: "DELETE",
-    body: { recipeId },
-    headers,
-  });
+  return await http(`/api/favorites/${userId}`, { method: "DELETE", body: { recipeId }, headers });
 }
 
 // === Comentarios ===
 export async function getComments(recipeId) {
   return http(`/api/comments/${recipeId}`, { method: "GET" });
 }
-
 export async function addComment(recipeId, { content, userId }) {
   return http(`/api/comments/${recipeId}`, {
     method: "POST",
