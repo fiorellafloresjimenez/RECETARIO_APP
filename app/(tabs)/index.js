@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useContext } from "react";
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import SearchBar from "../../src/components/SearchBar";
@@ -16,6 +16,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const { user, token } = useContext(AuthContext);
   const [favIds, setFavIds] = useState([]);
+  const { width } = useWindowDimensions();
+
+  const numColumns = width > 600 ? 3 : 1;
 
   useEffect(() => {
     (async () => {
@@ -35,7 +38,6 @@ export default function Home() {
     if (user && token) {
       try {
         const favs = await getUserFavorites(user.id, token);
-        // getUserFavorites returns array of recipe objects
         const ids = favs.map(r => String(r.id));
         setFavIds(ids);
       } catch (e) {
@@ -94,7 +96,6 @@ export default function Home() {
   }, [recipes, query, filters]);
 
   const handleFavUpdate = async () => {
-    // Called when a favorite is toggled in RecipeCard
     await loadFavs();
   };
 
@@ -111,15 +112,20 @@ export default function Home() {
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
       <FlatList
+        key={numColumns}
         data={filtered}
+        numColumns={numColumns}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
-          <RecipeCard
-            receta={item}
-            onFav={handleFavUpdate}
-            isFav={favIds.includes(String(item.id))}
-          />
+          <View style={{ flex: 1, maxWidth: numColumns > 1 ? `${100 / numColumns}%` : '100%', padding: 8 }}>
+            <RecipeCard
+              receta={item}
+              onFav={handleFavUpdate}
+              isFav={favIds.includes(String(item.id))}
+            />
+          </View>
         )}
+        columnWrapperStyle={numColumns > 1 ? { justifyContent: 'flex-start' } : undefined}
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             <Text style={styles.appTitle}>Super Recetario</Text>
