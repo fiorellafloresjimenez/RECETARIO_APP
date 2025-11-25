@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { AuthContext } from "../../src/store/authContext";
-import { COLORS, SIZES } from "../../src/constants/theme";
+import { COLORS, SIZES, SHADOWS } from "../../src/constants/theme";
 
 export default function Account() {
   const router = useRouter();
@@ -12,11 +13,13 @@ export default function Account() {
   // Login state
   const [lEmail, setLEmail] = useState("");
   const [lPassword, setLPassword] = useState("");
+  const [lShowPass, setLShowPass] = useState(false);
   const [lLoading, setLLoading] = useState(false);
 
   // Register state
   const [rEmail, setREmail] = useState("");
   const [rPassword, setRPassword] = useState("");
+  const [rShowPass, setRShowPass] = useState(false);
   const [rUsername, setRUsername] = useState("");
   const [rLoading, setRLoading] = useState(false);
 
@@ -57,29 +60,33 @@ export default function Account() {
       <View style={styles.container}>
         <Text style={styles.title}>Mi Cuenta</Text>
         <View style={styles.panel}>
-          <View style={styles.row}>
-            <Text style={styles.label}>Usuario:</Text>
-            <Text style={styles.value}>{user.username}</Text>
+          <View style={styles.avatarContainer}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{user.username?.[0]?.toUpperCase()}</Text>
+            </View>
+            <Text style={styles.username}>{user.username}</Text>
+            <Text style={styles.role}>{user.role}</Text>
           </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Email:</Text>
-            <Text style={styles.value}>{user.email}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Rol:</Text>
-            <Text style={styles.value}>{user.role}</Text>
+
+          <View style={styles.infoSection}>
+            <View style={styles.row}>
+              <Text style={styles.label}>Email</Text>
+              <Text style={styles.value}>{user.email}</Text>
+            </View>
           </View>
           
           {user.role === "admin" && (
             <Pressable 
-              style={[styles.btn, { backgroundColor: COLORS.honey, marginBottom: 12 }]} 
+              style={[styles.btn, styles.btnAdmin]} 
               onPress={() => router.push("/admin")}
             >
-              <Text style={[styles.btnText, { color: COLORS.coffee }]}>Administrar Recetas</Text>
+              <Ionicons name="settings-outline" size={20} color={COLORS.primary} />
+              <Text style={[styles.btnText, { color: COLORS.primary }]}>Administrar Recetas</Text>
             </Pressable>
           )}
 
           <Pressable style={[styles.btn, styles.btnLogout]} onPress={logout}>
+            <Ionicons name="log-out-outline" size={20} color="#fff" />
             <Text style={styles.btnText}>Cerrar sesión</Text>
           </Pressable>
         </View>
@@ -110,60 +117,105 @@ export default function Account() {
         {mode === "login" ? (
           <View style={styles.form}>
             <Text style={styles.formTitle}>Ingresa a tu cuenta</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Correo electrónico"
-              value={lEmail}
-              onChangeText={setLEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Contraseña"
-              value={lPassword}
-              onChangeText={setLPassword}
-              secureTextEntry
-            />
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Correo electrónico</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="ejemplo@correo.com"
+                placeholderTextColor={COLORS.textLight}
+                value={lEmail}
+                onChangeText={setLEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Contraseña</Text>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="********"
+                  placeholderTextColor={COLORS.textLight}
+                  value={lPassword}
+                  onChangeText={setLPassword}
+                  secureTextEntry={!lShowPass}
+                />
+                <Pressable onPress={() => setLShowPass(!lShowPass)} style={styles.eyeBtn}>
+                  <Ionicons name={lShowPass ? "eye-off-outline" : "eye-outline"} size={20} color={COLORS.textLight} />
+                </Pressable>
+              </View>
+            </View>
+
             <Pressable 
-              style={[styles.btn, lLoading && styles.btnDisabled]} 
+              style={[styles.btn, styles.btnPrimary, lLoading && styles.btnDisabled]} 
               onPress={handleLogin}
               disabled={lLoading}
             >
-              <Text style={styles.btnText}>{lLoading ? "Cargando..." : "Entrar"}</Text>
+              {lLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.btnText}>Entrar</Text>
+              )}
             </Pressable>
           </View>
         ) : (
           <View style={styles.form}>
             <Text style={styles.formTitle}>Crea una cuenta nueva</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Nombre de usuario"
-              value={rUsername}
-              onChangeText={setRUsername}
-              autoCapitalize="none"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Correo electrónico"
-              value={rEmail}
-              onChangeText={setREmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Contraseña"
-              value={rPassword}
-              onChangeText={setRPassword}
-              secureTextEntry
-            />
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Nombre de usuario</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Usuario"
+                placeholderTextColor={COLORS.textLight}
+                value={rUsername}
+                onChangeText={setRUsername}
+                autoCapitalize="none"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Correo electrónico</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="ejemplo@correo.com"
+                placeholderTextColor={COLORS.textLight}
+                value={rEmail}
+                onChangeText={setREmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Contraseña</Text>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="********"
+                  placeholderTextColor={COLORS.textLight}
+                  value={rPassword}
+                  onChangeText={setRPassword}
+                  secureTextEntry={!rShowPass}
+                />
+                <Pressable onPress={() => setRShowPass(!rShowPass)} style={styles.eyeBtn}>
+                  <Ionicons name={rShowPass ? "eye-off-outline" : "eye-outline"} size={20} color={COLORS.textLight} />
+                </Pressable>
+              </View>
+            </View>
+
             <Pressable 
-              style={[styles.btn, rLoading && styles.btnDisabled]} 
+              style={[styles.btn, styles.btnPrimary, rLoading && styles.btnDisabled]} 
               onPress={handleRegister}
               disabled={rLoading}
             >
-              <Text style={styles.btnText}>{rLoading ? "Cargando..." : "Crear cuenta"}</Text>
+              {rLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.btnText}>Crear cuenta</Text>
+              )}
             </Pressable>
           </View>
         )}
@@ -189,36 +241,84 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: COLORS.coffee,
+    color: COLORS.primary,
     marginBottom: 24,
     textAlign: 'center',
   },
   panel: {
     backgroundColor: COLORS.paper,
-    borderRadius: SIZES.radius,
-    padding: 20,
-    ...SIZES.shadow,
+    borderRadius: SIZES.radiusLg,
+    padding: 24,
+    ...SHADOWS.default,
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  avatarText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  username: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.text,
+  },
+  role: {
+    fontSize: 14,
+    color: COLORS.textLight,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginTop: 4,
+  },
+  infoSection: {
+    marginBottom: 24,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: COLORS.border,
+    paddingVertical: 16,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    paddingVertical: 8,
   },
   label: {
-    fontWeight: 'bold',
-    color: COLORS.coffee,
+    fontWeight: '600',
+    color: COLORS.textLight,
   },
   value: {
-    color: COLORS.ink,
+    color: COLORS.text,
+    fontWeight: '500',
   },
   btn: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 12,
+    paddingVertical: 14,
     borderRadius: SIZES.radius,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  btnPrimary: {
+    backgroundColor: COLORS.primary,
     marginTop: 20,
+    ...SHADOWS.sm,
+  },
+  btnAdmin: {
+    backgroundColor: COLORS.bg,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    marginBottom: 12,
   },
   btnLogout: {
     backgroundColor: COLORS.danger,
@@ -233,42 +333,71 @@ const styles = StyleSheet.create({
   },
   tabs: {
     flexDirection: 'row',
-    marginBottom: 16,
+    marginBottom: 24,
     backgroundColor: COLORS.paper,
     borderRadius: SIZES.radius,
     padding: 4,
+    ...SHADOWS.sm,
   },
   tab: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 12,
     alignItems: 'center',
     borderRadius: SIZES.radius - 4,
   },
   tabActive: {
-    backgroundColor: COLORS.bg,
+    backgroundColor: COLORS.primary,
   },
   tabText: {
     fontWeight: '600',
-    color: COLORS.muted,
+    color: COLORS.textLight,
   },
   tabTextActive: {
-    color: COLORS.primary,
+    color: '#fff',
   },
   form: {
-    gap: 12,
+    gap: 16,
   },
   formTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: COLORS.coffee,
+    color: COLORS.text,
     marginBottom: 8,
+    textAlign: 'center',
+  },
+  inputGroup: {
+    gap: 8,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginLeft: 4,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.bg,
     borderWidth: 1,
-    borderColor: COLORS.honey,
+    borderColor: COLORS.border,
     borderRadius: SIZES.radius,
-    padding: 12,
+    padding: 14,
     fontSize: 16,
+    color: COLORS.text,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.bg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.radius,
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 14,
+    fontSize: 16,
+    color: COLORS.text,
+  },
+  eyeBtn: {
+    padding: 14,
   },
 });

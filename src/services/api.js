@@ -35,7 +35,7 @@ function mapRecipe(r = {}) {
     image: absolutizeImage(r.image),
     cookTime: Number(r.cookTime ?? 0),
     servings: Number(r.servings ?? 0),
-    difficulty: String(r.difficulty || "").toLowerCase(),
+    difficulty: String(r.difficulty || "").charAt(0).toUpperCase() + String(r.difficulty || "").slice(1).toLowerCase(),
     category: r.category || "",
     restrictions: Array.isArray(r.restrictions)
       ? r.restrictions.map((x) => String(x || "").toLowerCase())

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { View, Text, TextInput, ScrollView, StyleSheet, Pressable, Alert } from "react-native";
 import { COLORS, SIZES } from "../constants/theme";
 
-const DIFFICULTIES = ["fácil", "media", "difícil"];
+const DIFFICULTIES = ["Fácil", "Intermedio", "Difícil"];
 
 export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) {
   const [name, setName] = useState(initial?.name ?? "");
@@ -10,7 +10,7 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
   const [image, setImage] = useState(initial?.image ?? "");
   const [cookTime, setCookTime] = useState(initial?.cookTime ? String(initial.cookTime) : "");
   const [servings, setServings] = useState(initial?.servings ? String(initial.servings) : "1");
-  const [difficulty, setDifficulty] = useState(initial?.difficulty ?? "media");
+  const [difficulty, setDifficulty] = useState(initial?.difficulty ?? "Intermedio");
   const [category, setCategory] = useState(initial?.category ?? "");
   const [ingredients, setIngredients] = useState(initial?.ingredients ?? []);
   const [instructions, setInstructions] = useState(initial?.instructions ?? []);
@@ -42,12 +42,19 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
     setter((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  const handleImageBlur = () => {
+    if (image && !image.startsWith("http") && !image.startsWith("/")) {
+      // Assume it's a filename
+      setImage(`/assets/images/recipes/${image}`);
+    }
+  };
+
   const validate = () => {
     if (!name.trim()) return "El nombre es obligatorio";
     if (!description.trim()) return "La descripción es obligatoria";
     if (!Number.isFinite(Number(cookTime)) || Number(cookTime) < 0) return "Tiempo de cocción inválido";
     if (!Number.isFinite(Number(servings)) || Number(servings) <= 0) return "Porciones inválidas";
-    if (!DIFFICULTIES.includes(String(difficulty).toLowerCase())) return "Dificultad inválida";
+    if (!DIFFICULTIES.includes(difficulty)) return "Dificultad inválida";
     if (ingredients.length === 0) return "Agrega al menos un ingrediente";
     if (instructions.length === 0) return "Agrega al menos un paso";
     return "";
@@ -93,8 +100,10 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
             style={styles.input} 
             value={image} 
             onChangeText={setImage} 
-            placeholder="https://..." 
+            onBlur={handleImageBlur}
+            placeholder="https://... o nombre.jpg" 
         />
+        <Text style={styles.helperText}>Dejar vacío para usar la imagen por defecto basada en el ID.</Text>
       </View>
 
       <View style={styles.row}>
@@ -237,7 +246,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    gap: 16,
+    gap: 20,
     paddingBottom: 40,
   },
   group: {
@@ -249,19 +258,21 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: COLORS.coffee,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginLeft: 4,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.paper,
     borderWidth: 1,
-    borderColor: COLORS.honey,
+    borderColor: COLORS.border,
     borderRadius: SIZES.radius,
     padding: 12,
     fontSize: 16,
+    color: COLORS.text,
   },
   textArea: {
-    minHeight: 80,
+    minHeight: 100,
     textAlignVertical: 'top',
   },
   inputRow: {
@@ -269,7 +280,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   btnAdd: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.secondary,
     width: 48,
     justifyContent: 'center',
     alignItems: 'center',
@@ -284,16 +295,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.paper,
     padding: 12,
     borderRadius: SIZES.radius,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.05)',
+    borderColor: COLORS.border,
   },
   listText: {
     flex: 1,
     fontSize: 14,
-    color: COLORS.ink,
+    color: COLORS.text,
   },
   removeText: {
     color: COLORS.danger,
@@ -331,31 +342,39 @@ const styles = StyleSheet.create({
   tag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.honey,
-    paddingVertical: 4,
+    backgroundColor: COLORS.warning,
+    paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 16,
     gap: 6,
   },
   tagText: {
     fontSize: 14,
-    color: COLORS.coffee,
+    color: '#fff',
+    fontWeight: '600',
   },
   tagRemove: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: COLORS.coffee,
+    color: '#fff',
   },
   errorText: {
     color: COLORS.danger,
     textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  helperText: {
+    fontSize: 12,
+    color: COLORS.textLight,
+    marginTop: 4,
+    marginLeft: 4,
   },
   actions: {
     gap: 12,
     marginTop: 16,
   },
   btn: {
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: SIZES.radius,
     alignItems: 'center',
   },
@@ -365,7 +384,7 @@ const styles = StyleSheet.create({
   btnOutline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: COLORS.muted,
+    borderColor: COLORS.textLight,
   },
   btnText: {
     color: '#fff',
@@ -373,7 +392,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   btnOutlineText: {
-    color: COLORS.muted,
+    color: COLORS.textLight,
     fontWeight: '600',
     fontSize: 16,
   },
