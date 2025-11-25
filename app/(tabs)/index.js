@@ -1,5 +1,13 @@
+// app/(tabs)/index.js
 import { useEffect, useMemo, useState, useContext } from "react";
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, useWindowDimensions } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  useWindowDimensions,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import SearchBar from "../../src/components/SearchBar";
@@ -7,19 +15,22 @@ import Filters from "../../src/components/Filters";
 import RecipeCard from "../../src/components/RecipeCard";
 import { getRecipes, getUserFavorites } from "../../src/services/api";
 import { AuthContext } from "../../src/store/authContext";
-import { COLORS, SIZES } from "../../src/constants/theme";
+import { COLORS } from "../../src/constants/theme";
 
 export default function Home() {
   const [recipes, setRecipes] = useState([]);
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState({});
+  const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
+
   const { user, token } = useContext(AuthContext);
   const [favIds, setFavIds] = useState([]);
+
   const { width } = useWindowDimensions();
+  const numColumns = width > 900 ? 3 : 2;
 
-  const numColumns = width > 600 ? 3 : 1;
-
+  // Load recipes
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -38,10 +49,10 @@ export default function Home() {
     if (user && token) {
       try {
         const favs = await getUserFavorites(user.id, token);
-        const ids = favs.map(r => String(r.id));
+        const ids = favs.map((r) => String(r.id));
         setFavIds(ids);
       } catch (e) {
-        console.error("Error loading favs:", e);
+        console.error("Error cargando favoritos:", e);
       }
     } else {
       setFavIds([]);
@@ -57,9 +68,10 @@ export default function Home() {
     const q = query.trim().toLowerCase();
 
     if (q) {
-      list = list.filter((r) =>
-        r.name?.toLowerCase().includes(q) ||
-        r.ingredients?.some?.((i) => i.toLowerCase().includes(q))
+      list = list.filter(
+        (r) =>
+          r.name?.toLowerCase().includes(q) ||
+          r.ingredients?.some?.((i) => i.toLowerCase().includes(q))
       );
     }
 
@@ -71,7 +83,6 @@ export default function Home() {
           if (f === "30-45") return t > 30 && t <= 45;
           if (f === "45-60") return t > 45 && t <= 60;
           if (f === "60+") return t > 60;
-          return true;
         });
       });
     }
@@ -104,20 +115,33 @@ export default function Home() {
       <Text style={styles.emptyText}>
         {loading ? "Cargando recetas..." : "No se encontraron recetas"}
       </Text>
-      {loading && <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 16 }} />}
+      {loading && (
+        <ActivityIndicator
+          size="large"
+          color={COLORS.primary}
+          style={{ marginTop: 16 }}
+        />
+      )}
     </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
+
       <FlatList
         key={numColumns}
         data={filtered}
         numColumns={numColumns}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
-          <View style={{ flex: 1, maxWidth: numColumns > 1 ? `${100 / numColumns}%` : '100%', padding: 8 }}>
+          <View
+            style={{
+              flex: 1,
+              maxWidth: `${100 / numColumns}%`,
+              padding: 8,
+            }}
+          >
             <RecipeCard
               receta={item}
               onFav={handleFavUpdate}
@@ -125,17 +149,26 @@ export default function Home() {
             />
           </View>
         )}
-        columnWrapperStyle={numColumns > 1 ? { justifyContent: 'flex-start' } : undefined}
+        columnWrapperStyle={
+          numColumns > 1 ? { justifyContent: "flex-start" } : undefined
+        }
         ListHeaderComponent={
           <View style={styles.headerContainer}>
-            <Text style={styles.appTitle}>Super Recetario</Text>
+            <Text style={styles.appTitle}>SUPER • RECETARIO</Text>
+
             <SearchBar
               value={query}
               onChange={setQuery}
               onSubmit={setQuery}
-              placeholder="Buscar recetas..."
+              placeholder="Buscar recetas o ingredientes"
+              onFiltersPress={() => setShowFilters((prev) => !prev)}
             />
-            <Filters value={filters} onChange={setFilters} />
+
+            {showFilters && (
+              <View style={styles.filterPanel}>
+                <Filters value={filters} onChange={setFilters} />
+              </View>
+            )}
           </View>
         }
         ListEmptyComponent={renderEmpty}
@@ -148,24 +181,50 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bg,
+    backgroundColor: COLORS.seaBlue,
   },
   listContent: {
     padding: 16,
-    paddingBottom: 80,
+    paddingBottom: 100,
   },
   headerContainer: {
     marginBottom: 16,
   },
   appTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: COLORS.coffee,
-    marginBottom: 16,
-    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    textTransform: "uppercase",
+    letterSpacing: 1.8,
+    color: COLORS.text,
+    backgroundColor: COLORS.honey,
+    paddingVertical: 12,
+    borderRadius: 26,
+    overflow: "hidden",
+    marginBottom: 14,
   },
+
+  // 🔥 NUEVA TARJETA DE FILTROS (MUY PARECIDA AL MOCKUP)
+  filterPanel: {
+    backgroundColor: COLORS.cream,       // beige sólido elegante
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    borderRadius: 22,
+    alignSelf: "center",                 // centrado horizontal
+    width: "94%",                         // más suave visualmente
+    marginTop: 10,
+    marginBottom: 18,
+
+    // Sombras suaves estilo app moderna
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+  },
+
   center: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 40,
   },
   emptyText: {

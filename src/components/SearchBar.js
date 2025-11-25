@@ -1,53 +1,87 @@
-import { View, TextInput, Pressable, Text, StyleSheet } from "react-native";
-import { COLORS, SIZES } from "../constants/theme";
-import { useState } from "react";
+// src/components/SearchBar.js
+import React, { useState } from "react";
+import { View, TextInput, Pressable, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { COLORS } from "../constants/theme";
 
-export default function SearchBar({ value, onChange, onSubmit, placeholder }) {
+export default function SearchBar({
+  value,
+  onChange,
+  onSubmit,
+  placeholder,
+  onFiltersPress,
+}) {
   const [local, setLocal] = useState(value || "");
 
+  const handleSubmit = () => {
+    onSubmit?.(local);
+  };
+
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        value={local}
-        onChangeText={(t) => { setLocal(t); onChange?.(t); }}
-        placeholder={placeholder}
-        placeholderTextColor={COLORS.muted}
-        onSubmitEditing={() => onSubmit?.(local)}
-      />
-      <Pressable style={styles.btn} onPress={() => onSubmit?.(local)}>
-        <Text style={styles.btnText}>Buscar</Text>
-      </Pressable>
+    <View style={styles.wrapper}>
+      <View style={styles.container}>
+        <Ionicons
+          name="search"
+          size={20}
+          color={COLORS.muted}
+          style={styles.leftIcon}
+        />
+
+        <TextInput
+          style={styles.input}
+          value={local}
+          onChangeText={(t) => {
+            setLocal(t);
+            onChange?.(t);
+          }}
+          placeholder={placeholder}
+          placeholderTextColor={COLORS.muted}
+          returnKeyType="search"
+          onSubmitEditing={handleSubmit}
+        />
+
+        <Pressable
+          style={styles.filterBtn}
+          onPress={onFiltersPress}
+          disabled={!onFiltersPress}
+        >
+          <Ionicons
+            name="options-outline"
+            size={20}
+            color={COLORS.honey} // ICONO BEIGE
+          />
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    marginBottom: 12,
+  },
   container: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.cream,
+    borderRadius: 24,
+    paddingHorizontal: 12,
+    height: 44,
+  },
+  leftIcon: {
+    marginRight: 6,
   },
   input: {
     flex: 1,
-    height: 44,
-    backgroundColor: '#fff',
-    borderRadius: SIZES.radius,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: COLORS.honey,
-    color: COLORS.ink,
+    fontSize: 14,
+    color: COLORS.text,
   },
-  btn: {
-    height: 44,
-    paddingHorizontal: 16,
-    backgroundColor: COLORS.primary,
-    borderRadius: SIZES.radius,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  btnText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  filterBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.seaBlue, // BOTÓN AZUL
   },
 });

@@ -1,22 +1,30 @@
+// src/constants/theme.js
+
 export const COLORS = {
-  primary: '#2C3E50',    // Deep Blue/Grey - Professional & Trustworthy
-  secondary: '#E67E22',  // Muted Orange - Warmth/Action
-  accent: '#3498DB',     // Bright Blue - Highlights
-  success: '#27AE60',    // Green - Success
-  danger: '#C0392B',     // Red - Errors/Delete
-  warning: '#F39C12',    // Orange - Warnings
-  
-  // Neutrals
-  bg: '#F5F7FA',         // Very Light Grey/Blue - Clean Background
-  paper: '#FFFFFF',      // White - Cards/Surfaces
-  text: '#2C3E50',       // Dark Grey - Primary Text
-  textLight: '#7F8C8D',  // Medium Grey - Secondary Text
-  border: '#BDC3C7',     // Light Grey - Borders
-  
-  // Aliases for backward compatibility (mapping to new palette)
+  // Azul oscuro de fondo
+  primary: '#123D5C',
+
+  // Beige madera (barra superior, tarjetas, bottom bar)
+  secondary: '#E4C9A2',
+
+  // Verde de botones
+  accent: '#8BA75A',
+
+  success: '#27AE60',
+  danger: '#C0392B',
+  warning: '#F39C12',
+
+  // Neutros
+  bg: '#F5F7FA',
+  paper: '#F3E1C4',
+  text: '#2C190A',
+  textLight: '#7A6957',
+  border: '#D2BFA5',
+
+  // Aliases (para no romper nada que ya use estos nombres)
   get lemonade() { return this.warning; },
   get seaBlue() { return this.primary; },
-  get matcha() { return this.success; },
+  get matcha() { return this.accent; },
   get honey() { return this.secondary; },
   get coffee() { return this.text; },
   get ink() { return this.text; },
