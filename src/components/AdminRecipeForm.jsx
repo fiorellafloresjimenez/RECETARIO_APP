@@ -1,5 +1,6 @@
-
 import { useEffect, useMemo, useState } from "react";
+import { View, Text, TextInput, ScrollView, StyleSheet, Pressable, Alert } from "react-native";
+import { COLORS, SIZES } from "../constants/theme";
 
 const DIFFICULTIES = ["fácil", "media", "difícil"];
 
@@ -7,8 +8,8 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
   const [name, setName] = useState(initial?.name ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
   const [image, setImage] = useState(initial?.image ?? "");
-  const [cookTime, setCookTime] = useState(initial?.cookTime ?? 0);
-  const [servings, setServings] = useState(initial?.servings ?? 1);
+  const [cookTime, setCookTime] = useState(initial?.cookTime ? String(initial.cookTime) : "");
+  const [servings, setServings] = useState(initial?.servings ? String(initial.servings) : "1");
   const [difficulty, setDifficulty] = useState(initial?.difficulty ?? "media");
   const [category, setCategory] = useState(initial?.category ?? "");
   const [ingredients, setIngredients] = useState(initial?.ingredients ?? []);
@@ -16,18 +17,27 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
   const [restrictions, setRestrictions] = useState(initial?.restrictions ?? []);
   const [error, setError] = useState("");
 
+  const [ingInput, setIngInput] = useState("");
+  const [instInput, setInstInput] = useState("");
+  const [tagInput, setTagInput] = useState("");
+
   useEffect(() => { setError(""); }, [name, description, image, cookTime, servings, difficulty, category, ingredients, instructions, restrictions]);
 
   const payload = useMemo(() => ({
-    name, description, image, cookTime, servings, difficulty, category,
+    name, description, image, 
+    cookTime: Number(cookTime), 
+    servings: Number(servings), 
+    difficulty, category,
     ingredients, instructions, restrictions,
   }), [name, description, image, cookTime, servings, difficulty, category, ingredients, instructions, restrictions]);
 
-  const handleAddToList = (setter, value) => {
+  const handleAddToList = (setter, value, inputSetter) => {
     const v = value.trim();
     if (!v) return;
     setter((prev) => [...prev, v]);
+    inputSetter("");
   };
+
   const handleRemoveFromList = (setter, idx) => {
     setter((prev) => prev.filter((_, i) => i !== idx));
   };
@@ -35,124 +45,336 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
   const validate = () => {
     if (!name.trim()) return "El nombre es obligatorio";
     if (!description.trim()) return "La descripción es obligatoria";
-    if (!Number.isFinite(Number(cookTime)) || cookTime < 0) return "Tiempo de cocción inválido";
-    if (!Number.isFinite(Number(servings)) || servings <= 0) return "Porciones inválidas";
+    if (!Number.isFinite(Number(cookTime)) || Number(cookTime) < 0) return "Tiempo de cocción inválido";
+    if (!Number.isFinite(Number(servings)) || Number(servings) <= 0) return "Porciones inválidas";
     if (!DIFFICULTIES.includes(String(difficulty).toLowerCase())) return "Dificultad inválida";
     if (ingredients.length === 0) return "Agrega al menos un ingrediente";
     if (instructions.length === 0) return "Agrega al menos un paso";
     return "";
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     const err = validate();
-    if (err) { setError(err); return; }
+    if (err) { 
+        setError(err); 
+        Alert.alert("Error", err);
+        return; 
+    }
     await onSubmit?.(payload);
   };
 
-  const [ingInput, setIngInput] = useState("");
-  const [instInput, setInstInput] = useState("");
-  const [tagInput, setTagInput] = useState("");
-
   return (
-    <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
-      <div style={{ display: "grid", gap: 6 }}>
-        <label>Nombre</label>
-        <input value={name} onChange={(e)=>setName(e.target.value)} placeholder="Nombre de la receta" />
-      </div>
-      <div style={{ display: "grid", gap: 6 }}>
-        <label>Descripción</label>
-        <textarea value={description} onChange={(e)=>setDescription(e.target.value)} placeholder="Describe la receta" rows={3} />
-      </div>
-      <div style={{ display: "grid", gap: 6 }}>
-        <label>Imagen (URL)</label>
-        <input value={image} onChange={(e)=>setImage(e.target.value)} placeholder="https://..." />
-      </div>
-      <div style={{ display: "grid", gap: 6 }}>
-        <label>Tiempo de cocción (min)</label>
-        <input type="number" value={cookTime} onChange={(e)=>setCookTime(Number(e.target.value))} min={0} />
-      </div>
-      <div style={{ display: "grid", gap: 6 }}>
-        <label>Porciones</label>
-        <input type="number" value={servings} onChange={(e)=>setServings(Number(e.target.value))} min={1} />
-      </div>
-      <div style={{ display: "grid", gap: 6 }}>
-        <label>Dificultad</label>
-        <select value={difficulty} onChange={(e)=>setDifficulty(e.target.value)}>
-          {DIFFICULTIES.map((d) => <option key={d} value={d}>{d}</option>)}
-        </select>
-      </div>
-      <div style={{ display: "grid", gap: 6 }}>
-        <label>Categoría</label>
-        <input value={category} onChange={(e)=>setCategory(e.target.value)} placeholder="Postre, Plato principal..." />
-      </div>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <View style={styles.group}>
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput 
+            style={styles.input} 
+            value={name} 
+            onChangeText={setName} 
+            placeholder="Nombre de la receta" 
+        />
+      </View>
 
-      <div style={{ display: "grid", gap: 6 }}>
-        <label>Ingredientes</label>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input value={ingInput} onChange={(e)=>setIngInput(e.target.value)} placeholder="Agregar ingrediente" />
-          <button type="button" className="btn" onClick={() => { handleAddToList(setIngredients, ingInput); setIngInput(""); }}>
-            Añadir
-          </button>
-        </div>
-        <ul>
-          {ingredients.map((ing, idx) => (
-            <li key={idx} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-              <span>{idx + 1}. {ing}</span>
-              <button type="button" className="btn-outline" onClick={() => handleRemoveFromList(setIngredients, idx)}>
-                Quitar
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <View style={styles.group}>
+        <Text style={styles.label}>Descripción</Text>
+        <TextInput 
+            style={[styles.input, styles.textArea]} 
+            value={description} 
+            onChangeText={setDescription} 
+            placeholder="Describe la receta" 
+            multiline 
+            numberOfLines={3}
+        />
+      </View>
 
-      <div style={{ display: "grid", gap: 6 }}>
-        <label>Pasos</label>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input value={instInput} onChange={(e)=>setInstInput(e.target.value)} placeholder="Agregar paso" />
-          <button type="button" className="btn" onClick={() => { handleAddToList(setInstructions, instInput); setInstInput(""); }}>
-            Añadir
-          </button>
-        </div>
-        <ul>
-          {instructions.map((step, idx) => (
-            <li key={idx} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-              <span>{idx + 1}. {step}</span>
-              <button type="button" className="btn-outline" onClick={() => handleRemoveFromList(setInstructions, idx)}>
-                Quitar
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <View style={styles.group}>
+        <Text style={styles.label}>Imagen (URL)</Text>
+        <TextInput 
+            style={styles.input} 
+            value={image} 
+            onChangeText={setImage} 
+            placeholder="https://..." 
+        />
+      </View>
 
-      <div style={{ display: "grid", gap: 6 }}>
-        <label>Etiquetas (restricciones)</label>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input value={tagInput} onChange={(e)=>setTagInput(e.target.value)} placeholder="vegano, sin gluten..." />
-          <button type="button" className="btn" onClick={() => { handleAddToList(setRestrictions, tagInput); setTagInput(""); }}>
-            Añadir
-          </button>
-        </div>
-        <ul>
-          {restrictions.map((t, idx) => (
-            <li key={idx} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-              <span>{t}</span>
-              <button type="button" className="btn-outline" onClick={() => handleRemoveFromList(setRestrictions, idx)}>
-                Quitar
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <View style={styles.row}>
+        <View style={[styles.group, { flex: 1 }]}>
+            <Text style={styles.label}>Tiempo (min)</Text>
+            <TextInput 
+                style={styles.input} 
+                value={cookTime} 
+                onChangeText={setCookTime} 
+                keyboardType="numeric"
+            />
+        </View>
+        <View style={[styles.group, { flex: 1 }]}>
+            <Text style={styles.label}>Porciones</Text>
+            <TextInput 
+                style={styles.input} 
+                value={servings} 
+                onChangeText={setServings} 
+                keyboardType="numeric"
+            />
+        </View>
+      </View>
 
-      {error && <div style={{ color: "var(--danger)" }}>{error}</div>}
+      <View style={styles.group}>
+        <Text style={styles.label}>Dificultad</Text>
+        <View style={styles.pills}>
+            {DIFFICULTIES.map((d) => (
+                <Pressable 
+                    key={d} 
+                    style={[styles.pill, difficulty === d && styles.pillActive]}
+                    onPress={() => setDifficulty(d)}
+                >
+                    <Text style={[styles.pillText, difficulty === d && styles.pillTextActive]}>
+                        {d.charAt(0).toUpperCase() + d.slice(1)}
+                    </Text>
+                </Pressable>
+            ))}
+        </View>
+      </View>
 
-      <div style={{ display: "flex", gap: 8 }}>
-        <button type="submit" className="btn">{initial ? "Guardar cambios" : "Crear receta"}</button>
-        <button type="button" className="btn-outline" onClick={onCancel}>Cancelar</button>
-      </div>
-    </form>
+      <View style={styles.group}>
+        <Text style={styles.label}>Categoría</Text>
+        <TextInput 
+            style={styles.input} 
+            value={category} 
+            onChangeText={setCategory} 
+            placeholder="Postre, Plato principal..." 
+        />
+      </View>
+
+      <View style={styles.group}>
+        <Text style={styles.label}>Ingredientes</Text>
+        <View style={styles.inputRow}>
+          <TextInput 
+            style={[styles.input, { flex: 1 }]} 
+            value={ingInput} 
+            onChangeText={setIngInput} 
+            placeholder="Agregar ingrediente" 
+          />
+          <Pressable style={styles.btnAdd} onPress={() => handleAddToList(setIngredients, ingInput, setIngInput)}>
+            <Text style={styles.btnAddText}>+</Text>
+          </Pressable>
+        </View>
+        {ingredients.map((ing, idx) => (
+            <View key={idx} style={styles.listItem}>
+                <Text style={styles.listText}>{idx + 1}. {ing}</Text>
+                <Pressable onPress={() => handleRemoveFromList(setIngredients, idx)}>
+                    <Text style={styles.removeText}>✕</Text>
+                </Pressable>
+            </View>
+        ))}
+      </View>
+
+      <View style={styles.group}>
+        <Text style={styles.label}>Pasos</Text>
+        <View style={styles.inputRow}>
+          <TextInput 
+            style={[styles.input, { flex: 1 }]} 
+            value={instInput} 
+            onChangeText={setInstInput} 
+            placeholder="Agregar paso" 
+          />
+          <Pressable style={styles.btnAdd} onPress={() => handleAddToList(setInstructions, instInput, setInstInput)}>
+            <Text style={styles.btnAddText}>+</Text>
+          </Pressable>
+        </View>
+        {instructions.map((step, idx) => (
+            <View key={idx} style={styles.listItem}>
+                <Text style={styles.listText}>{idx + 1}. {step}</Text>
+                <Pressable onPress={() => handleRemoveFromList(setInstructions, idx)}>
+                    <Text style={styles.removeText}>✕</Text>
+                </Pressable>
+            </View>
+        ))}
+      </View>
+
+      <View style={styles.group}>
+        <Text style={styles.label}>Etiquetas</Text>
+        <View style={styles.inputRow}>
+          <TextInput 
+            style={[styles.input, { flex: 1 }]} 
+            value={tagInput} 
+            onChangeText={setTagInput} 
+            placeholder="vegano, sin gluten..." 
+          />
+          <Pressable style={styles.btnAdd} onPress={() => handleAddToList(setRestrictions, tagInput, setTagInput)}>
+            <Text style={styles.btnAddText}>+</Text>
+          </Pressable>
+        </View>
+        <View style={styles.tagsContainer}>
+            {restrictions.map((t, idx) => (
+                <View key={idx} style={styles.tag}>
+                    <Text style={styles.tagText}>{t}</Text>
+                    <Pressable onPress={() => handleRemoveFromList(setRestrictions, idx)}>
+                        <Text style={styles.tagRemove}>✕</Text>
+                    </Pressable>
+                </View>
+            ))}
+        </View>
+      </View>
+
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+      <View style={styles.actions}>
+        <Pressable style={[styles.btn, styles.btnPrimary]} onPress={handleSubmit}>
+            <Text style={styles.btnText}>{initial ? "Guardar cambios" : "Crear receta"}</Text>
+        </Pressable>
+        <Pressable style={[styles.btn, styles.btnOutline]} onPress={onCancel}>
+            <Text style={styles.btnOutlineText}>Cancelar</Text>
+        </Pressable>
+      </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.bg,
+  },
+  content: {
+    padding: 16,
+    gap: 16,
+    paddingBottom: 40,
+  },
+  group: {
+    gap: 8,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: COLORS.coffee,
+  },
+  input: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: COLORS.honey,
+    borderRadius: SIZES.radius,
+    padding: 12,
+    fontSize: 16,
+  },
+  textArea: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  inputRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  btnAdd: {
+    backgroundColor: COLORS.primary,
+    width: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: SIZES.radius,
+  },
+  btnAddText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  listItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: SIZES.radius,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+  },
+  listText: {
+    flex: 1,
+    fontSize: 14,
+    color: COLORS.ink,
+  },
+  removeText: {
+    color: COLORS.danger,
+    fontSize: 18,
+    fontWeight: 'bold',
+    paddingHorizontal: 8,
+  },
+  pills: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  pill: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    backgroundColor: 'transparent',
+  },
+  pillActive: {
+    backgroundColor: COLORS.primary,
+  },
+  pillText: {
+    color: COLORS.primary,
+    fontWeight: '600',
+  },
+  pillTextActive: {
+    color: '#fff',
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  tag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.honey,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    gap: 6,
+  },
+  tagText: {
+    fontSize: 14,
+    color: COLORS.coffee,
+  },
+  tagRemove: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: COLORS.coffee,
+  },
+  errorText: {
+    color: COLORS.danger,
+    textAlign: 'center',
+  },
+  actions: {
+    gap: 12,
+    marginTop: 16,
+  },
+  btn: {
+    paddingVertical: 14,
+    borderRadius: SIZES.radius,
+    alignItems: 'center',
+  },
+  btnPrimary: {
+    backgroundColor: COLORS.primary,
+  },
+  btnOutline: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: COLORS.muted,
+  },
+  btnText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  btnOutlineText: {
+    color: COLORS.muted,
+    fontWeight: '600',
+    fontSize: 16,
+  },
+});

@@ -1,9 +1,11 @@
 import { useContext, useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
 import { AuthContext } from "../../src/store/authContext";
 import { COLORS, SIZES } from "../../src/constants/theme";
 
 export default function Account() {
+  const router = useRouter();
   const { user, login, register, logout, isLoading } = useContext(AuthContext);
   const [mode, setMode] = useState("login"); // login | register
   
@@ -68,6 +70,15 @@ export default function Account() {
             <Text style={styles.value}>{user.role}</Text>
           </View>
           
+          {user.role === "admin" && (
+            <Pressable 
+              style={[styles.btn, { backgroundColor: COLORS.honey, marginBottom: 12 }]} 
+              onPress={() => router.push("/admin")}
+            >
+              <Text style={[styles.btnText, { color: COLORS.coffee }]}>Administrar Recetas</Text>
+            </Pressable>
+          )}
+
           <Pressable style={[styles.btn, styles.btnLogout]} onPress={logout}>
             <Text style={styles.btnText}>Cerrar sesión</Text>
           </Pressable>

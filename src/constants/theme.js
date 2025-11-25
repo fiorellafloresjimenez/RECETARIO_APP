@@ -1,20 +1,28 @@
 export const COLORS = {
-  lemonade: '#FBD271',
-  seaBlue: '#0F4E77',
-  matcha: '#89A377',
-  honey: '#E7BD8B',
-  coffee: '#372516',
-  bg: '#F5EFE7',
-  ink: '#2A221C',
-  muted: '#6B5C53',
-  paper: '#F2E6D7',
-  danger: '#C94B45',
+  primary: '#2C3E50',    // Deep Blue/Grey - Professional & Trustworthy
+  secondary: '#E67E22',  // Muted Orange - Warmth/Action
+  accent: '#3498DB',     // Bright Blue - Highlights
+  success: '#27AE60',    // Green - Success
+  danger: '#C0392B',     // Red - Errors/Delete
+  warning: '#F39C12',    // Orange - Warnings
   
-  // Aliases
-  get cream() { return this.honey; },
-  get primary() { return this.seaBlue; },
-  get accent() { return this.lemonade; },
-  get ok() { return this.matcha; },
+  // Neutrals
+  bg: '#F5F7FA',         // Very Light Grey/Blue - Clean Background
+  paper: '#FFFFFF',      // White - Cards/Surfaces
+  text: '#2C3E50',       // Dark Grey - Primary Text
+  textLight: '#7F8C8D',  // Medium Grey - Secondary Text
+  border: '#BDC3C7',     // Light Grey - Borders
+  
+  // Aliases for backward compatibility (mapping to new palette)
+  get lemonade() { return this.warning; },
+  get seaBlue() { return this.primary; },
+  get matcha() { return this.success; },
+  get honey() { return this.secondary; },
+  get coffee() { return this.text; },
+  get ink() { return this.text; },
+  get muted() { return this.textLight; },
+  get cream() { return this.paper; },
+  get ok() { return this.success; },
 };
 
 export const SIZES = {
