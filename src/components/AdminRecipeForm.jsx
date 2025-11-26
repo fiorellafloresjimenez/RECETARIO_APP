@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useContext } from "react";
 import { View, Text, TextInput, ScrollView, StyleSheet, Pressable, Alert } from "react-native";
 import { COLORS, SIZES } from "../constants/theme";
+import { AuthContext } from "../store/authContext";
+import { getRecipes } from "../services/api";
 
 const DIFFICULTIES = ["Fácil", "Intermedio", "Difícil"];
 
 export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) {
+  const { token } = useContext(AuthContext);
   const [name, setName] = useState(initial?.name ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
   const [image, setImage] = useState(initial?.image ?? "");
@@ -20,6 +23,25 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
   const [ingInput, setIngInput] = useState("");
   const [instInput, setInstInput] = useState("");
   const [tagInput, setTagInput] = useState("");
+
+  const [existingCategories, setExistingCategories] = useState([]);
+
+  useEffect(() => {
+    // Fetch recipes to get existing categories
+    const fetchCategories = async () => {
+      try {
+        const recipes = await getRecipes(token);
+        const cats = new Set();
+        recipes.forEach(r => {
+          if (r.category) cats.add(r.category);
+        });
+        setExistingCategories(Array.from(cats).sort());
+      } catch (e) {
+        console.log("Error fetching categories", e);
+      }
+    };
+    fetchCategories();
+  }, [token]);
 
   useEffect(() => { setError(""); }, [name, description, image, cookTime, servings, difficulty, category, ingredients, instructions, restrictions]);
 
@@ -152,6 +174,21 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
             onChangeText={setCategory} 
             placeholder="Postre, Plato principal..." 
         />
+        {existingCategories.length > 0 && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+            {existingCategories.map((cat, idx) => (
+              <Pressable 
+                key={idx} 
+                style={[styles.pill, category === cat && styles.pillActive]}
+                onPress={() => setCategory(cat)}
+              >
+                <Text style={[styles.pillText, category === cat && styles.pillTextActive]}>
+                  {cat}
+                </Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        )}
       </View>
 
       <View style={styles.group}>
@@ -323,6 +360,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.primary,
     backgroundColor: 'transparent',
+    marginRight: 8,
   },
   pillActive: {
     backgroundColor: COLORS.primary,
@@ -333,6 +371,9 @@ const styles = StyleSheet.create({
   },
   pillTextActive: {
     color: '#fff',
+  },
+  categoryScroll: {
+    marginTop: 8,
   },
   tagsContainer: {
     flexDirection: 'row',

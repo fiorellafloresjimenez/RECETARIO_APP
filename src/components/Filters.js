@@ -12,7 +12,7 @@ const DIFF = ["fácil", "intermedio", "difícil"];
 const TYPES = ["Desayuno", "Almuerzo", "Cena", "Snack"];
 const RESTR = ["vegetariano", "sin lacteos", "sin gluten"];
 
-export default function Filters({ value = {}, onChange }) {
+export default function Filters({ value = {}, onChange, availableCategories = [], availableRestrictions = [] }) {
   const v = {
     time: value.time || [],
     difficulty: value.difficulty || [],
@@ -72,8 +72,8 @@ export default function Filters({ value = {}, onChange }) {
       
       {renderSection("Tiempo", TIME, "time")}
       {renderSection("Dificultad", DIFF, "difficulty", (d) => d[0].toUpperCase() + d.slice(1))}
-      {renderSection("Tipo", TYPES, "type")}
-      {renderSection("Restricciones", RESTR, "restrictions", (r) => r[0].toUpperCase() + r.slice(1))}
+      {availableCategories.length > 0 && renderSection("Tipo", availableCategories, "type")}
+      {availableRestrictions.length > 0 && renderSection("Restricciones", availableRestrictions, "restrictions", (r) => r[0].toUpperCase() + r.slice(1))}
     </View>
   );
 }

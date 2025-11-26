@@ -186,7 +186,12 @@ export default function Home() {
 
             {showFilters && (
               <View style={[styles.filterPanel, { backgroundColor: filterPanelBg }]}>
-                <Filters value={filters} onChange={setFilters} />
+                <Filters 
+                  value={filters} 
+                  onChange={setFilters} 
+                  availableCategories={Array.from(new Set(recipes.map(r => r.category).filter(Boolean))).sort()}
+                  availableRestrictions={Array.from(new Set(recipes.flatMap(r => r.restrictions || []).filter(Boolean))).sort()}
+                />
               </View>
             )}
           </View>
