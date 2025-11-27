@@ -323,20 +323,6 @@ npx expo build:ios
 
 - Verifica que la URL del backend sea accesible
 - Usa `expo-image` en lugar de `react-native` Image
-
-## 📄 Licencia
-
-Este proyecto es privado y de uso educativo.
-
-## 👥 Contribuir
-
-Para contribuir al proyecto:
-
-1. Crea una rama desde `main`
-2. Realiza tus cambios
-3. Haz commit con mensajes descriptivos
-4. Crea un Pull Request
-
 ---
 
 **Desarrollado con ❤️ usando Expo y React Native**
