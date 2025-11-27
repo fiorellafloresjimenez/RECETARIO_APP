@@ -35,7 +35,6 @@ export function AuthProvider({ children }) {
                 await SecureStore.deleteItemAsync(STORAGE_KEY);
               }
             } catch (e) {
-              // Keep session on network error for offline support
               console.warn("Validation failed or network error", e);
               setSession(parsed); 
             }

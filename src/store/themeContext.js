@@ -12,7 +12,6 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(systemScheme || 'light');
 
   useEffect(() => {
-    // Load saved theme or fallback to system
     const loadTheme = async () => {
       try {
         const savedTheme = await AsyncStorage.getItem('userTheme');

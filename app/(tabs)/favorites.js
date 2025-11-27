@@ -59,7 +59,6 @@ export default function Favorites() {
     }, [user])
   );
 
-  // Si no hay usuario logueado
   if (!user) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor }]}>
@@ -81,7 +80,13 @@ export default function Favorites() {
         data={list}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
-          <View style={styles.cardWrapper}>
+          <View
+            style={{
+              flex: 1,
+              maxWidth: `${100 / numColumns}%`,
+              padding: 8,
+            }}
+          >
             <RecipeCard receta={item} isFav={true} onFav={loadFavorites} />
           </View>
         )}
@@ -121,10 +126,8 @@ export default function Favorites() {
 }
 
 const styles = StyleSheet.create({
-  // Fondo azul como en Home
   container: {
     flex: 1,
-    // backgroundColor: COLORS.seaBlue, // Removed static color
   },
 
   listContent: {
@@ -181,7 +184,6 @@ const styles = StyleSheet.create({
 
   emptyText: {
     fontSize: 16,
-    // color: "#FFFFFF", // Removed static color
     marginTop: 8,
     textAlign: "center",
   },

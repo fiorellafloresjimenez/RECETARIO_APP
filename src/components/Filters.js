@@ -91,10 +91,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    // color: COLORS.coffee, // Removed static color
   },
   clear: {
-    // color: COLORS.primary, // Removed static color
   },
   section: {
     marginBottom: 12,
@@ -102,7 +100,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: '600',
-    // color: COLORS.muted, // Removed static color
     marginBottom: 4,
   },
   chips: {
@@ -112,19 +109,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    // backgroundColor: COLORS.bg, // Removed static color
     borderWidth: 1,
-    // borderColor: COLORS.honey, // Removed static color
   },
   chipActive: {
-    // backgroundColor: COLORS.primary, // Removed static color
-    // borderColor: COLORS.primary, // Removed static color
   },
   chipText: {
     fontSize: 12,
-    // color: COLORS.ink, // Removed static color
   },
   chipTextActive: {
-    // color: '#fff', // Removed static color
   },
 });

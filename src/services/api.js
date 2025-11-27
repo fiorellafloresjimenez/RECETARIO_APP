@@ -49,7 +49,6 @@ function mapRecipe(r = {}) {
 
 const mapList = (arr) => (Array.isArray(arr) ? arr.map(mapRecipe) : []);
 
-// === Recetas ===
 export async function getRecipes(token) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const data = await http("/api/recipes", { headers });
@@ -87,7 +86,6 @@ export async function deleteRecipe(id, token) {
   return await http(`/api/recipes/${id}`, { method: "DELETE", headers });
 }
 
-// === Autenticación ===
 export async function loginUser({ email, password }) {
   return await http("/api/auth/login", {
     method: "POST",
@@ -112,7 +110,6 @@ export async function registerUser({
   return await http("/api/auth/register", { method: "POST", body });
 }
 
-// === Favoritos ===
 export async function getUserFavorites(userId, token) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const favoritesData = await http(`/api/favorites/${userId}`, { headers });
@@ -135,7 +132,6 @@ export async function removeFavorite(userId, recipeId, token) {
   return await http(`/api/favorites/${userId}`, { method: "DELETE", body: { recipeId }, headers });
 }
 
-// === Comentarios ===
 export async function getComments(recipeId) {
   return http(`/api/comments/${recipeId}`, { method: "GET" });
 }

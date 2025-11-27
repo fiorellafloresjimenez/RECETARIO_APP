@@ -15,7 +15,6 @@ export default function AdminIndex() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Dynamic Colors
   const backgroundColor = useThemeColor({}, "background");
   const cardBg = useThemeColor({}, "cardBackground");
   const textColor = useThemeColor({}, "text");

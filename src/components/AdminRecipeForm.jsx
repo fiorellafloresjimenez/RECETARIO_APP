@@ -27,7 +27,6 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
 
   const [existingCategories, setExistingCategories] = useState([]);
 
-  // Dynamic Colors
   const backgroundColor = useThemeColor({}, "background");
   const cardBg = useThemeColor({}, "cardBackground"); // Using cardBg for inputs to distinguish from main bg
   const textColor = useThemeColor({}, "text");
@@ -40,7 +39,6 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
   const dangerColor = useThemeColor({}, "danger");
 
   useEffect(() => {
-    // Fetch recipes to get existing categories
     const fetchCategories = async () => {
       try {
         const recipes = await getRecipes(token);
@@ -79,7 +77,6 @@ export default function AdminRecipeForm({ initial = null, onSubmit, onCancel }) 
 
   const handleImageBlur = () => {
     if (image && !image.startsWith("http") && !image.startsWith("/")) {
-      // Assume it's a filename
       setImage(`/assets/images/recipes/${image}`);
     }
   };
@@ -425,7 +422,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   btnPrimary: {
-    // Dynamic
   },
   btnOutline: {
     backgroundColor: 'transparent',

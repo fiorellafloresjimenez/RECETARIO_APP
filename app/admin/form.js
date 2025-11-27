@@ -15,7 +15,6 @@ export default function AdminForm() {
   const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(!!id);
 
-  // Dynamic Colors
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
   const borderColor = useThemeColor({}, "borderColor");

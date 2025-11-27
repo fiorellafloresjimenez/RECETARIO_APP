@@ -1,4 +1,3 @@
-// app/(tabs)/_layout.js
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../../src/constants/theme";
@@ -13,7 +12,6 @@ export default function TabLayout() {
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.muted,
 
-        // TAB BAR RECTANGULAR PEGADA AL BORDE INFERIOR
         tabBarStyle: {
           position: "absolute",
           left: 0,
@@ -23,7 +21,6 @@ export default function TabLayout() {
           backgroundColor: COLORS.cream,
           borderTopWidth: 0,
 
-          // ❗ anulamos el padding automático del safe area
           paddingTop: 0,
           paddingBottom: 0,
 
@@ -33,7 +30,6 @@ export default function TabLayout() {
           elevation: 8,
         },
 
-        // centramos el contenido de cada item
         tabBarItemStyle: {
           justifyContent: "center",
           alignItems: "center",

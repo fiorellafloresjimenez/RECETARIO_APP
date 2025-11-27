@@ -24,7 +24,6 @@ export default function Account() {
   const { theme, toggleTheme } = useTheme();
   const [mode, setMode] = useState("login");
 
-  // Dynamic Colors
   const backgroundColor = useThemeColor({}, "background");
   const cardBg = useThemeColor({}, "cardBackground");
   const textColor = useThemeColor({}, "text");
@@ -38,13 +37,11 @@ export default function Account() {
   const btnText = useThemeColor({}, "buttonText");
   const dangerColor = useThemeColor({}, "danger");
 
-  // Login state
   const [lEmail, setLEmail] = useState("");
   const [lPassword, setLPassword] = useState("");
   const [lShowPass, setLShowPass] = useState(false);
   const [lLoading, setLLoading] = useState(false);
 
-  // Register state
   const [rEmail, setREmail] = useState("");
   const [rPassword, setRPassword] = useState("");
   const [rShowPass, setRShowPass] = useState(false);

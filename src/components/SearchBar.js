@@ -1,4 +1,3 @@
-// src/components/SearchBar.js
 import React, { useState } from "react";
 import { View, TextInput, Pressable, StyleSheet } from "react-native";
 
@@ -71,7 +70,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    // backgroundColor: COLORS.cream, // Removed static color
     borderRadius: 24,
     paddingHorizontal: 12,
     height: 44,
@@ -82,7 +80,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 14,
-    // color: COLORS.text, // Removed static color
   },
   filterBtn: {
     width: 32,
@@ -90,6 +87,5 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    // backgroundColor: COLORS.seaBlue, // BOTÓN AZUL // Removed static color
   },
 });

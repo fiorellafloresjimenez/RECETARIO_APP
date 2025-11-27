@@ -54,6 +54,7 @@ export default function RecipeDetail() {
   const listTextColor = useThemeColor({}, "text");
   const emptyTextColor = useThemeColor({}, "text");
   const borderColor = useThemeColor({}, "borderColor");
+  const stepNumberColor = useThemeColor({}, "primary");
 
   useEffect(() => {
     (async () => {
@@ -194,7 +195,7 @@ export default function RecipeDetail() {
                 <View style={styles.list}>
                   {receta.ingredients.map((item, index) => (
                     <View key={index} style={styles.listItem}>
-                      <Text style={styles.bullet}>▢</Text>
+                      <Text style={styles.bullet}>•</Text>
                       <Text style={[styles.listText, { color: listTextColor }]}>{item}</Text>
                     </View>
                   ))}
@@ -214,7 +215,7 @@ export default function RecipeDetail() {
                 <View style={styles.list}>
                   {receta.instructions.map((step, index) => (
                     <View key={index} style={styles.listItem}>
-                      <Text style={styles.stepNumber}>{index + 1}.</Text>
+                      <Text style={[styles.stepNumber, { color: listTextColor }]}>{index + 1}.</Text>
                       <Text style={[styles.listText, { color: listTextColor }]}>{step}</Text>
                     </View>
                   ))}
@@ -244,12 +245,10 @@ const styles = StyleSheet.create({
   },
   screen: {
     flex: 1,
-    // backgroundColor: COLORS.seaBlue, // Removed static color
   },
   screenContent: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    // MUY importante para que el tab bar NO tape los comentarios
     paddingBottom: 140,
   },
 
@@ -382,7 +381,6 @@ const styles = StyleSheet.create({
   stepNumber: {
     fontSize: 14,
     fontWeight: "700",
-    color: COLORS.primary,
     minWidth: 20,
     textAlign: "right",
     marginTop: 1,

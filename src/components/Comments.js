@@ -185,13 +185,11 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 24,
     padding: 16,
-    // backgroundColor: '#fff', // Removed static color
     borderRadius: SIZES.radius,
   },
   header: {
     fontSize: 20,
     fontWeight: 'bold',
-    // color: COLORS.coffee, // Removed static color
     marginBottom: 16,
   },
   form: {
@@ -200,22 +198,18 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: '600',
     marginBottom: 8,
-    // color: COLORS.ink, // Removed static color
   },
   input: {
     borderWidth: 1,
-    // borderColor: COLORS.honey, // Removed static color
     borderRadius: SIZES.radius,
     padding: 12,
     minHeight: 80,
     marginBottom: 8,
-    // backgroundColor: '#fff', // Removed static color
   },
   btnContainer: {
     alignItems: 'flex-end',
   },
   btn: {
-    // backgroundColor: COLORS.primary, // Removed static color
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 8,
@@ -224,7 +218,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   btnText: {
-    // color: '#fff', // Removed static color
     fontWeight: '600',
   },
   mutedText: {
@@ -241,9 +234,7 @@ const styles = StyleSheet.create({
   commentItem: {
     padding: 12,
     borderRadius: 12,
-    // backgroundColor: COLORS.bg, // Removed static color
     borderWidth: 1,
-    // borderColor: 'rgba(0,0,0,0.06)', // Removed static color
   },
   commentHeader: {
     flexDirection: 'row',
@@ -252,7 +243,6 @@ const styles = StyleSheet.create({
   },
   author: {
     fontWeight: 'bold',
-    // color: COLORS.coffee, // Removed static color
     fontSize: 14,
   },
   date: {
@@ -261,7 +251,6 @@ const styles = StyleSheet.create({
   },
   commentContent: {
     fontSize: 14,
-    // color: COLORS.ink, // Removed static color
     marginBottom: 4,
   },
   deleteBtn: {

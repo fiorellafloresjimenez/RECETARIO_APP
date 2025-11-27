@@ -1,4 +1,3 @@
-// app/(tabs)/index.js
 import { useEffect, useMemo, useState, useContext } from "react";
 import {
   View,
@@ -41,7 +40,6 @@ export default function Home() {
   const { width } = useWindowDimensions();
   const numColumns = width > 900 ? 3 : 2;
 
-  // Load recipes
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -199,7 +197,6 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: COLORS.seaBlue, // Removed static color
   },
   listContent: {
     padding: 16,
@@ -212,26 +209,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    // backgroundColor: COLORS.honey, // Removed static color
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 26,
     marginBottom: 14,
   },
   appTitle: {
-    fontSize: 20, // Reduced slightly to fit button
+    fontSize: 20,
     fontWeight: "bold",
     textTransform: "uppercase",
     letterSpacing: 1.8,
-    // color: COLORS.text, // Removed static color
   },
   themeBtn: {
     padding: 4,
   },
 
-  // 🔥 NUEVA TARJETA DE FILTROS (MUY PARECIDA AL MOCKUP)
   filterPanel: {
-    // backgroundColor: COLORS.cream,       // Removed static color
     paddingVertical: 16,
     paddingHorizontal: 18,
     borderRadius: 22,
@@ -240,7 +233,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 18,
 
-    // Sombras suaves estilo app moderna
     shadowColor: "#000",
     shadowOpacity: 0.12,
     shadowRadius: 14,

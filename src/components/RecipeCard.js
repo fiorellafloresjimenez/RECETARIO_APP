@@ -11,11 +11,8 @@ import { useThemeColor } from "../../hooks/useThemeColor";
 const capitalize = (s) =>
   typeof s === "string" && s.length ? s[0].toUpperCase() + s.slice(1) : s;
 
-// Colores por tipo de restricción
 const getTagColors = (tag) => {
   const key = (tag || "").toLowerCase().trim();
-
-  // Puedes ajustar estos nombres según cómo vengan desde el backend
   if (key.includes("vegano") || key.includes("vegan")) {
     return {
       bg: "#E8F5E9",
@@ -186,7 +183,6 @@ export default function RecipeCard({ receta, isFav: initialFav, onFav }) {
 
 const styles = StyleSheet.create({
   card: {
-    // backgroundColor: COLORS.paper, // Removed static color
     borderRadius: SIZES.radius,
     marginBottom: 16,
     overflow: "hidden",
@@ -214,12 +210,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "bold",
-    // color: COLORS.coffee, // Removed static color
     marginBottom: 6,
   },
   text: {
     fontSize: 13,
-    // color: COLORS.ink, // Removed static color
     marginBottom: 3,
   },
   bold: {
@@ -257,13 +251,11 @@ const styles = StyleSheet.create({
   btnOutline: {
     backgroundColor: "transparent",
     borderWidth: 1,
-    // borderColor: COLORS.primary, // Removed static color
   },
   btnText: {
     fontSize: 13,
     fontWeight: "600",
   },
   btnOutlineText: {
-    // color: COLORS.primary, // Removed static color
   },
 });

@@ -1,27 +1,21 @@
-// src/constants/theme.js
 
 export const COLORS = {
-  // Azul oscuro de fondo
   primary: '#123D5C',
 
-  // Beige madera (barra superior, tarjetas, bottom bar)
   secondary: '#E4C9A2',
 
-  // Verde de botones
   accent: '#8BA75A',
 
   success: '#27AE60',
   danger: '#C0392B',
   warning: '#F39C12',
 
-  // Neutros
   bg: '#F5F7FA',
   paper: '#F3E1C4',
   text: '#2C190A',
   textLight: '#7A6957',
   border: '#D2BFA5',
 
-  // Aliases (para no romper nada que ya use estos nombres)
   get lemonade() { return this.warning; },
   get seaBlue() { return this.primary; },
   get matcha() { return this.accent; },
